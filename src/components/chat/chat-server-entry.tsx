@@ -1,10 +1,10 @@
-function ChatServerEntry(props: { msg: string; msgId?: string }) {
+function ChatServerEntry(props: { msg: string; msgId?: string; key: string }) {
   return (
-    <div className="w-72 mx-auto">
-      <div>
-        <span>{props.msg}</span>
+    <li>
+      <div className="text-gray-500 text-sm px-1">
+        <p>{props.msg}</p>
       </div>
-    </div>
+    </li>
   );
 }
 

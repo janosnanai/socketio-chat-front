@@ -56,22 +56,13 @@ function ChatMain(props: { socket: Socket }) {
       <div className="text-zinc-300 bg-zinc-800 rounded-md p-2 h-96 overflow-y-auto">
         <ul className="space-y-2">
           {messages.map((chatMsg) => {
-            let type: "own"|"server"|"other";
-            switch (chatMsg.senderId) {
-              case clientId:
-                type = "own";
-                break;
-              case "server":
-                type = "server";
-                break;
-              default:
-                type = "other";
+            if (chatMsg.senderId === "server") {
+              return <ChatServerEntry key={chatMsg.msgId} msg={chatMsg.msg} />;
             }
             return (
               <ChatUserEntry
                 key={chatMsg.msgId}
                 msg={chatMsg.msg}
-                type={type}
                 senderName={chatMsg.senderName}
               />
             );
