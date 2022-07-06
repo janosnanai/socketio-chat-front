@@ -1,4 +1,4 @@
-function ChatServerEntry(props: { msg: string }) {
+function ChatServerEntry(props: { msg: string; msgId?: string }) {
   return (
     <div className="w-72 mx-auto">
       <div>

@@ -1,63 +1,83 @@
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { Socket } from "socket.io-client";
+import { nanoid } from "nanoid";
 
 import ChatServerEntry from "./chat-server-entry";
 import ChatUserEntry from "./chat-user-entry";
 
 function ChatMain(props: { socket: Socket }) {
   const firstRenderRef = useRef(true);
+  const bottomRef = useRef<HTMLDivElement>(null);
 
+  const [clientName, setName] = useState("");
+  const [clientId, setClientId] = useState("");
   const [messages, setMessages] = useState<ChatMsg[]>([]);
   const [messageInput, setMessageInput] = useState("");
+
   const { socket } = props;
 
   useEffect(() => {
     if (!firstRenderRef.current) return;
 
-    socket.on("message", ({ msg, msgId, senderId }) => {
+    socket.on("message", ({ msg, msgId, senderId, senderName }) => {
       console.log("incoming msg:", msg);
-      setMessages((prev) => [...prev, { msg, msgId, senderId }]);
+      setMessages((prev) => [...prev, { msg, msgId, senderId, senderName }]);
     });
+
+    setName(`guest-${nanoid(8)}`);
+    setClientId(nanoid(12));
 
     firstRenderRef.current = false;
   }, [socket]);
 
-  const sendHandler = (event: FormEvent) => {
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView();
+  }, [messages]);
+
+  function sendHandler(event: FormEvent) {
     event.preventDefault();
 
     if (socket.connected && messageInput) {
-      socket.emit("clientMsg", messageInput);
+      socket.emit("clientMsg", {
+        msg: messageInput,
+        senderName: clientName,
+        senderId: clientId,
+      });
       setMessageInput("");
     }
-  };
+  }
 
-  const textChangeHandler = (event: ChangeEvent<HTMLTextAreaElement>) => {
+  function textChangeHandler(event: ChangeEvent<HTMLTextAreaElement>) {
     setMessageInput(event.target.value);
-  };
+  }
 
   return (
     <div className="w-96 m-auto pt-10 px-5">
-      <div className="text-zinc-300 bg-zinc-800 rounded-md p-2">
+      <div className="text-zinc-300 bg-zinc-800 rounded-md p-2 h-96 overflow-y-auto">
         <ul className="space-y-2">
           {messages.map((chatMsg) => {
-            let type;
+            let type: "own"|"server"|"other";
             switch (chatMsg.senderId) {
-              case socket.id:
+              case clientId:
                 type = "own";
                 break;
               case "server":
                 type = "server";
                 break;
               default:
-                type = "other-user";
+                type = "other";
             }
             return (
-              <li key={chatMsg.msgId}>
-                <ChatUserEntry msg={chatMsg.msg} type={type} />
-              </li>
+              <ChatUserEntry
+                key={chatMsg.msgId}
+                msg={chatMsg.msg}
+                type={type}
+                senderName={chatMsg.senderName}
+              />
             );
           })}
         </ul>
+        <div ref={bottomRef}></div>
       </div>
       <div className="mt-3">
         <form onSubmit={sendHandler}>

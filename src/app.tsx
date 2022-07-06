@@ -42,21 +42,21 @@ function App() {
     firstRenderRef.current = false;
   }, [initSocket]);
 
-  const connectHandler = () => {
+  function connectHandler() {
     if (!socket.connected) {
       socket.connect();
     }
-  };
+  }
 
-  const disconnectHandler = () => {
+  function disconnectHandler() {
     if (socket.connected) {
       socket.disconnect();
     }
-  };
+  }
 
   return (
     <LayoutMain>
-      <main className="h-screen bg-zinc-900">
+      <main className="bg-zinc-900">
         <ChatMain socket={socket} />
         <div className="mx-auto w-96 p-5">
           {!connected && (
