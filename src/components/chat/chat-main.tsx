@@ -53,7 +53,7 @@ function ChatMain(props: { socket: Socket }) {
 
   return (
     <div className="w-96 m-auto pt-10 px-5">
-      <div className="text-zinc-300 bg-zinc-800 rounded-md p-2 h-96 overflow-y-auto">
+      <div className="text-zinc-300 bg-zinc-800 rounded-md p-2 h-96 overflow-y-auto scrollbar">
         <ul className="space-y-2">
           {messages.map((chatMsg) => {
             if (chatMsg.senderId === "server") {
