@@ -1,9 +1,14 @@
+import HamburgerButton from "../../ui/hamurger-button";
+
 function LayoutHeaderMain() {
   return (
     <header>
-      <h1 className="text-3xl bg-black text-zinc-300 p-3 font-thin text-center tracking-widest uppercase">
-        simpleChat
-      </h1>
+      <div className="flex justify-between px-4 items-center bg-black">
+        <h1 className="text-3xl  text-zinc-300 p-3 font-thin text-center tracking-widest uppercase">
+          simpleChat
+        </h1>
+        <HamburgerButton />
+      </div>
     </header>
   );
 }
