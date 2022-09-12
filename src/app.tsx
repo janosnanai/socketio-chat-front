@@ -1,8 +1,9 @@
 import type { ChangeEvent, FormEvent, KeyboardEvent } from "react";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-
 import { io } from "socket.io-client";
+
+import DarkModeSwitch from "./components/ui/dark-mode-switch";
 import { EventTypes, MessageTypes } from "./lib/constants";
 
 const SERVER_ADDRESS = import.meta.env.VITE_SERVER_ADDRESS!;
@@ -111,7 +112,8 @@ function App() {
   }
 
   return (
-    <>
+    <div className="relative">
+      <DarkModeSwitch className="absolute right-3 top-3" />
       <h1 className="text-xl text-center">hello</h1>
       <div className="flex justify-center">
         <div className="flex flex-col w-96 m-auto gap-2">
@@ -204,7 +206,7 @@ function App() {
           </ul>
         </aside>
       </div>
-    </>
+    </div>
   );
 }
 
