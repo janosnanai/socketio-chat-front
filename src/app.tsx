@@ -18,9 +18,9 @@ function App() {
   const [showTyping, setShowTyping] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
 
-  const initSocket = useCallback(() => {
-    console.log("initsocket");
+  const chatWindow = document.getElementById("chat-window");
 
+  const initSocket = useCallback(() => {
     socket.on(EventTypes.CONNECT, () => {
       setConnected(true);
     });
@@ -55,11 +55,15 @@ function App() {
     firstRenderRef.current = false;
   }, [initSocket]);
 
+  useEffect(() => {
+    if (!chatWindow) return;
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+  }, [messages]);
+
   function connectHandler() {
     if (!socket.connected) {
       socket.connect();
-      socket.emit(EventTypes.NEW_USER, { name: nameInput });
-      console.log("new user registering", nameInput);
+      socket.emit(EventTypes.NEW_USER, { username: nameInput });
     }
   }
 
@@ -111,7 +115,7 @@ function App() {
       <h1 className="text-xl text-center">hello</h1>
       <div className="flex justify-center">
         <div className="flex flex-col w-96 m-auto gap-2">
-          <div className="h-96 w-full overflow-y-auto">
+          <div id="chat-window" className="h-96 w-full overflow-y-auto">
             <ul>
               {messages.map((message) => {
                 if (message.type === MessageTypes.SERVER) {
@@ -195,7 +199,7 @@ function App() {
         <aside>
           <ul>
             {users.map((user) => (
-              <li>{user.name}</li>
+              <li key={user.id}>{user.username}</li>
             ))}
           </ul>
         </aside>

@@ -1,5 +1,5 @@
 type NewUserMsg = {
-  name: string;
+  username: string;
 };
 type CreateMsg = {
   content: string;
@@ -27,6 +27,6 @@ type SyncUsersMsg = {
 
 type User = {
   id: string;
-  name: string;
+  username: string;
   typing: boolean;
 };
