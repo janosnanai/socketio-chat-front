@@ -1,9 +1,11 @@
 import type { ChangeEvent, FormEvent, KeyboardEvent } from "react";
 
+import { useAtom } from "jotai";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { io } from "socket.io-client";
 
 import DarkModeSwitch from "./components/ui/dark-mode-switch";
+import { darkModeGetterAtom } from "./lib/atoms";
 import { EventTypes, MessageTypes } from "./lib/constants";
 
 const SERVER_ADDRESS = import.meta.env.VITE_SERVER_ADDRESS!;
@@ -12,6 +14,7 @@ function App() {
   const firstRenderRef = useRef(true);
   const socket = useMemo(() => io(SERVER_ADDRESS, { autoConnect: false }), []);
 
+  const [darkMode] = useAtom(darkModeGetterAtom);
   const [connected, setConnected] = useState(socket.connected);
   const [nameInput, setNameInput] = useState("anonymus");
   const [messageInput, setMessageInput] = useState("");
@@ -20,6 +23,7 @@ function App() {
   const [users, setUsers] = useState<User[]>([]);
 
   const chatWindow = document.getElementById("chat-window");
+  const appRoot = document.getElementById("app-root");
 
   const initSocket = useCallback(() => {
     socket.on(EventTypes.CONNECT, () => {
@@ -55,6 +59,14 @@ function App() {
 
     firstRenderRef.current = false;
   }, [initSocket]);
+
+  useEffect(() => {
+    if (darkMode) {
+      appRoot?.classList.add("dark");
+    } else {
+      appRoot?.classList.remove("dark");
+    }
+  });
 
   useEffect(() => {
     if (!chatWindow) return;
@@ -112,7 +124,7 @@ function App() {
   }
 
   return (
-    <div className="relative">
+    <div className="relative bg-zinc-100 dark:bg-zinc-800 transition-colors">
       <DarkModeSwitch className="absolute right-3 top-3" />
       <h1 className="text-xl text-center">hello</h1>
       <div className="flex justify-center">

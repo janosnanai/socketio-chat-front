@@ -14,7 +14,7 @@ function DarkModeSwitch({ className }: { className?: string }) {
     <Switch
       checked={darkModeEnabled}
       onChange={toggleDarkModeEnabled}
-      className={"h-6 w-6" + " " + className}
+      className={"h-6 w-6 text-purple-500" + " " + className}
     >
       <Transition
         show={darkModeEnabled && !prevIconVisible}
