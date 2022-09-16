@@ -14,19 +14,21 @@ function DarkModeSwitch({ className }: { className?: string }) {
     <Switch
       checked={darkModeEnabled}
       onChange={toggleDarkModeEnabled}
-      className={"h-6 w-6 text-purple-500" + " " + className}
+      className={
+        "h-6 w-6 text-purple-600 dark:text-purple-400" + " " + className
+      }
     >
       <Transition
         show={darkModeEnabled && !prevIconVisible}
         enter="transition duration-150 ease-out"
-        enterFrom="opacity-0 -translate-y-3"
-        enterTo="opacity-100 translate-y-0"
+        enterFrom="opacity-0"
+        enterTo="opacity-100"
         beforeLeave={() => {
           setPrevIconVisible(true);
         }}
         leave="transition duration-150 ease-in"
-        leaveFrom="opacity-100 translate-y-0"
-        leaveTo="opacity-0 translate-y-5"
+        leaveFrom="opacity-100"
+        leaveTo="opacity-0"
         afterLeave={() => {
           setPrevIconVisible(false);
         }}
@@ -36,14 +38,14 @@ function DarkModeSwitch({ className }: { className?: string }) {
       <Transition
         show={!darkModeEnabled && !prevIconVisible}
         enter="transition duration-150 ease-out"
-        enterFrom="opacity-0 -translate-y-3"
-        enterTo="opacity-100 translate-y-0"
+        enterFrom="opacity-0"
+        enterTo="opacity-100"
         beforeLeave={() => {
           setPrevIconVisible(true);
         }}
         leave="transition duration-150 ease-in"
-        leaveFrom="opacity-100 translate-y-0"
-        leaveTo="opacity-0 translate-y-5"
+        leaveFrom="opacity-100"
+        leaveTo="opacity-0"
         afterLeave={() => {
           setPrevIconVisible(false);
         }}

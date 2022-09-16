@@ -5,7 +5,15 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { io } from "socket.io-client";
 
 import DarkModeSwitch from "./components/ui/dark-mode-switch";
-import { darkModeGetterAtom } from "./lib/atoms";
+import RoomsBar from "./components/rooms-bar";
+import {
+  darkModeGetterAtom,
+  currentRoomSetterAtom,
+  roomsSetterAtom,
+  thisUserGetterAtom,
+  thisUserSetterAtom,
+  usersSetterAtom,
+} from "./lib/atoms";
 import { EventTypes, MessageTypes } from "./lib/constants";
 
 const SERVER_ADDRESS = import.meta.env.VITE_SERVER_ADDRESS!;
@@ -15,12 +23,14 @@ function App() {
   const socket = useMemo(() => io(SERVER_ADDRESS, { autoConnect: false }), []);
 
   const [darkMode] = useAtom(darkModeGetterAtom);
+  const [, setCurrentRoom] = useAtom(currentRoomSetterAtom);
+  const [, setRooms] = useAtom(roomsSetterAtom);
   const [connected, setConnected] = useState(socket.connected);
   const [nameInput, setNameInput] = useState("anonymus");
   const [messageInput, setMessageInput] = useState("");
   const [messages, setMessages] = useState<(ClientMsg | ServerMsg)[]>([]);
   const [showTyping, setShowTyping] = useState(false);
-  const [users, setUsers] = useState<User[]>([]);
+  const [, setUsers] = useAtom(usersSetterAtom);
 
   const chatWindow = document.getElementById("chat-window");
   const appRoot = document.getElementById("app-root");
@@ -66,7 +76,7 @@ function App() {
     } else {
       appRoot?.classList.remove("dark");
     }
-  });
+  }, [darkMode]);
 
   useEffect(() => {
     if (!chatWindow) return;
@@ -75,8 +85,19 @@ function App() {
 
   function connectHandler() {
     if (!socket.connected) {
-      socket.connect();
-      socket.emit(EventTypes.NEW_USER, { username: nameInput });
+      socket.connect().emit(
+        EventTypes.NEW_USER,
+        { username: nameInput },
+        // receive rooms from server
+        ({ rooms: newRooms }: SyncRoomsMsg) => {
+          setRooms(newRooms);
+          if (!newRooms.length) return;
+          const starterRoom = newRooms[0];
+          socket.emit(EventTypes.JOIN_ROOM, { roomId: starterRoom.id }, () =>
+            setCurrentRoom(starterRoom)
+          );
+        }
+      );
     }
   }
 
@@ -85,6 +106,15 @@ function App() {
       socket.disconnect();
     }
     setUsers([]);
+    setRooms([]);
+    setCurrentRoom(null);
+  }
+
+  function changeRoomHandler(selectedRoom: Room | null) {
+    if (!selectedRoom) return;
+    socket.emit(EventTypes.JOIN_ROOM, { roomId: selectedRoom.id }, () => {
+      setCurrentRoom(selectedRoom);
+    });
   }
 
   function nameInputChangeHandler(event: ChangeEvent<HTMLInputElement>) {
@@ -124,12 +154,15 @@ function App() {
   }
 
   return (
-    <div className="relative bg-zinc-100 dark:bg-zinc-800 transition-colors">
+    <div className="h-screen relative bg-zinc-100 dark:bg-zinc-800 transition-colors">
       <DarkModeSwitch className="absolute right-3 top-3" />
-      <h1 className="text-xl text-center">hello</h1>
-      <div className="flex justify-center">
+      <div className="flex justify-center pt-12">
+        <RoomsBar changeHandler={changeRoomHandler} />
         <div className="flex flex-col w-96 m-auto gap-2">
-          <div id="chat-window" className="h-96 w-full overflow-y-auto">
+          <div
+            id="chat-window"
+            className="h-96 w-full overflow-y-auto bg-zinc-200 dark:bg-zinc-700"
+          >
             <ul>
               {messages.map((message) => {
                 if (message.type === MessageTypes.SERVER) {
@@ -158,7 +191,10 @@ function App() {
           </div>
           <form onSubmit={submitHandler}>
             <div>
-              <label htmlFor="name" className="block mr-2">
+              <label
+                htmlFor="name"
+                className="block mr-2 text-zinc-700 dark:text-zinc-400"
+              >
                 your name
               </label>
               <input
@@ -167,11 +203,14 @@ function App() {
                 id="name"
                 type="text"
                 placeholder="enter a name..."
-                className="px-2 py-1 w-full"
+                className="px-2 py-1 w-full bg-zinc-200 dark:bg-zinc-700 placeholder:text-zinc-500 text-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
               />
             </div>
             <div>
-              <label htmlFor="message" className="block">
+              <label
+                htmlFor="message"
+                className="block text-zinc-700 dark:text-zinc-400"
+              >
                 message
               </label>
               <textarea
@@ -183,19 +222,19 @@ function App() {
                 id="message"
                 rows={5}
                 placeholder="type a message..."
-                className="px-2 py-1 w-full resize-none overflow-y-auto"
+                className="px-2 py-1 w-full resize-none overflow-y-auto bg-zinc-200 dark:bg-zinc-700 placeholder:text-zinc-500 text-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
               />
             </div>
             <button
               type="submit"
-              className="border p-2 uppercase w-full bg-emerald-700"
+              className="border p-2 uppercase w-full bg-emerald-500 rounded"
             >
               send
             </button>
           </form>
           {connected && (
             <button
-              className="border border-red-500 p-2 uppercase"
+              className="border border-red-500 text-zinc-800 dark:text-zinc-100 p-2 uppercase rounded"
               onClick={disconnectHandler}
             >
               disconnect
@@ -203,20 +242,13 @@ function App() {
           )}
           {!connected && (
             <button
-              className="border border-green-500 p-2 uppercase"
+              className="border border-green-500 text-zinc-800 dark:text-zinc-100 p-2 uppercase rounded"
               onClick={connectHandler}
             >
               connect
             </button>
           )}
         </div>
-        <aside>
-          <ul>
-            {users.map((user) => (
-              <li key={user.id}>{user.username}</li>
-            ))}
-          </ul>
-        </aside>
       </div>
     </div>
   );
