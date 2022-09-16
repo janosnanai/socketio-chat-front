@@ -51,7 +51,7 @@ function RoomsBar({
                     {({ open }) => (
                       <>
                         <Disclosure.Button
-                          className={`p-2 rounded-lg transition-colors duration-300 ${
+                          className={`p-2 rounded-lg transition-colors group duration-300 ${
                             currentRoom?.id === room.id
                               ? "text-emerald-300 bg-zinc-700"
                               : "text-zinc-400 hover:text-zinc-200 bg-zinc-800"
@@ -71,7 +71,7 @@ function RoomsBar({
                               </div>
                             </div>
                             <ChevronRightIcon
-                              className={`h-5 w-5 transition-transform ${
+                              className={`h-7 w-7 p-1 rounded-full group-hover:bg-zinc-600 transition-all duration-300 ${
                                 open ? "rotate-90" : "rotate-0"
                               }`}
                             />
