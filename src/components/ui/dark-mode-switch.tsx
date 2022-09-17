@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAtom } from "jotai";
 import { Switch, Transition } from "@headlessui/react";
 import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";
@@ -10,12 +10,22 @@ function DarkModeSwitch({ className }: { className?: string }) {
   const [, toggleDarkModeEnabled] = useAtom(darkModeTogglerAtom);
   const [prevIconVisible, setPrevIconVisible] = useState(false);
 
+  const appRoot = document.getElementById("app-root");
+
+  useEffect(() => {
+    if (darkModeEnabled) {
+      appRoot?.classList.add("dark");
+    } else {
+      appRoot?.classList.remove("dark");
+    }
+  }, [darkModeEnabled]);
+
   return (
     <Switch
       checked={darkModeEnabled}
       onChange={toggleDarkModeEnabled}
       className={
-        "h-6 w-6 text-purple-600 dark:text-purple-400" + " " + className
+        "h-6 w-6 text-zinc-300" + " " + className
       }
     >
       <Transition

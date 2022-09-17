@@ -1,64 +1,55 @@
-import type { ChangeEvent, FormEvent, KeyboardEvent } from "react";
-
 import { useAtom } from "jotai";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { io } from "socket.io-client";
+import { useCallback, useEffect, useRef } from "react";
 
+import ChatMessages from "./components/chat-window/chat-messages";
 import DarkModeSwitch from "./components/ui/dark-mode-switch";
+import MessageInput from "./components/chat-window/message-input";
 import RoomsBar from "./components/rooms-bar";
 import {
-  darkModeGetterAtom,
   currentRoomSetterAtom,
+  messagesSetterAtom,
   roomsSetterAtom,
+  socketAtom,
+  socketConnectedGetterAtom,
+  socketConnectedSetterAtom,
   thisUserGetterAtom,
-  thisUserSetterAtom,
   usersSetterAtom,
+  usersTypingSetterAtom,
 } from "./lib/atoms";
-import { EventTypes, MessageTypes } from "./lib/constants";
-
-const SERVER_ADDRESS = import.meta.env.VITE_SERVER_ADDRESS!;
+import { EventTypes } from "./lib/constants";
 
 function App() {
   const firstRenderRef = useRef(true);
-  const socket = useMemo(() => io(SERVER_ADDRESS, { autoConnect: false }), []);
-
-  const [darkMode] = useAtom(darkModeGetterAtom);
+  const [socket] = useAtom(socketAtom);
   const [, setCurrentRoom] = useAtom(currentRoomSetterAtom);
   const [, setRooms] = useAtom(roomsSetterAtom);
-  const [connected, setConnected] = useState(socket.connected);
-  const [nameInput, setNameInput] = useState("anonymus");
-  const [messageInput, setMessageInput] = useState("");
-  const [messages, setMessages] = useState<(ClientMsg | ServerMsg)[]>([]);
-  const [showTyping, setShowTyping] = useState(false);
+  const [connected] = useAtom(socketConnectedGetterAtom);
+  const [, setConnected] = useAtom(socketConnectedSetterAtom);
+  const [user] = useAtom(thisUserGetterAtom);
+  const [, setMessages] = useAtom(messagesSetterAtom);
+  const [, setShowTyping] = useAtom(usersTypingSetterAtom);
   const [, setUsers] = useAtom(usersSetterAtom);
 
-  const chatWindow = document.getElementById("chat-window");
-  const appRoot = document.getElementById("app-root");
-
   const initSocket = useCallback(() => {
-    socket.on(EventTypes.CONNECT, () => {
-      setConnected(true);
-    });
-
-    socket.on(EventTypes.DISCONNECT, () => {
-      setConnected(false);
-    });
-
-    socket.on(EventTypes.CLIENT_MESSAGE, (msg: ClientMsg) => {
-      setMessages((prev) => [...prev, msg]);
-    });
-
-    socket.on(EventTypes.SERVER_MESSAGE, (msg: ServerMsg) => {
-      setMessages((prev) => [...prev, msg]);
-    });
-
-    socket.on(EventTypes.TYPING, ({ isTyping }: TypingMsg) => {
-      setShowTyping(isTyping);
-    });
-
-    socket.on(EventTypes.SYNC_USERS, ({ users }: SyncUsersMsg) => {
-      setUsers(users);
-    });
+    socket
+      .on(EventTypes.CONNECT, () => {
+        setConnected(true);
+      })
+      .on(EventTypes.DISCONNECT, () => {
+        setConnected(false);
+      })
+      .on(EventTypes.CLIENT_MESSAGE, (msg: ClientMsg) => {
+        setMessages(msg);
+      })
+      .on(EventTypes.SERVER_MESSAGE, (msg: ServerMsg) => {
+        setMessages(msg);
+      })
+      .on(EventTypes.TYPING, ({ isTyping }: TypingMsg) => {
+        setShowTyping(isTyping);
+      })
+      .on(EventTypes.SYNC_USERS, ({ users }: SyncUsersMsg) => {
+        setUsers(users);
+      });
   }, [socket]);
 
   useEffect(() => {
@@ -70,24 +61,11 @@ function App() {
     firstRenderRef.current = false;
   }, [initSocket]);
 
-  useEffect(() => {
-    if (darkMode) {
-      appRoot?.classList.add("dark");
-    } else {
-      appRoot?.classList.remove("dark");
-    }
-  }, [darkMode]);
-
-  useEffect(() => {
-    if (!chatWindow) return;
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-  }, [messages]);
-
   function connectHandler() {
     if (!socket.connected) {
       socket.connect().emit(
         EventTypes.NEW_USER,
-        { username: nameInput },
+        { username: user.username },
         // receive rooms from server
         ({ rooms: newRooms }: SyncRoomsMsg) => {
           setRooms(newRooms);
@@ -117,139 +95,32 @@ function App() {
     });
   }
 
-  function nameInputChangeHandler(event: ChangeEvent<HTMLInputElement>) {
-    setNameInput(event.target.value);
-  }
-
-  function messageInputChangeHandler(event: ChangeEvent<HTMLTextAreaElement>) {
-    setMessageInput(event.target.value);
-  }
-
-  function typingOnHandler() {
-    socket.emit(EventTypes.TYPING, { isTyping: true });
-  }
-
-  function typingOffHandler() {
-    socket.emit(EventTypes.TYPING, { isTyping: false });
-  }
-
-  function submitMessage() {
-    if (!messageInput.trim()) return;
-    socket.emit(EventTypes.CREATE_MESSAGE, {
-      author: nameInput,
-      content: messageInput,
-    });
-    setMessageInput("");
-  }
-
-  function submitHandler(event?: FormEvent) {
-    event?.preventDefault();
-    submitMessage();
-  }
-
-  function keyDownHandler(event: KeyboardEvent) {
-    if (event.code !== "Enter") return;
-    event.preventDefault();
-    submitMessage();
-  }
-
   return (
-    <div className="h-screen relative bg-zinc-100 dark:bg-zinc-800 transition-colors">
+    <div className="h-screen relative bg-gradient-to-tr from-fuchsia-800 to-cyan-800 transition-colors">
       <DarkModeSwitch className="absolute right-3 top-3" />
-      <div className="flex justify-center pt-12">
+      <div className="flex gap-5 justify-center pt-12">
         <RoomsBar changeHandler={changeRoomHandler} />
-        <div className="flex flex-col w-96 m-auto gap-2">
-          <div
-            id="chat-window"
-            className="h-96 w-full overflow-y-auto bg-zinc-200 dark:bg-zinc-700"
-          >
-            <ul>
-              {messages.map((message) => {
-                if (message.type === MessageTypes.SERVER) {
-                  return (
-                    <li key={message.id}>
-                      <p className="text-sm text-center text-zinc-500">
-                        {(message as ServerMsg).content}
-                      </p>
-                    </li>
-                  );
-                }
-                if (message.type === MessageTypes.CLIENT) {
-                  return (
-                    <li key={message.id}>
-                      <p>{`${(message as ClientMsg).content} -- ${
-                        (message as ClientMsg).author
-                      }`}</p>
-                    </li>
-                  );
-                }
-              })}
-            </ul>
-            <p className="h-6 w-full">
-              {showTyping && "somebody is typing a message..."}
-            </p>
-          </div>
-          <form onSubmit={submitHandler}>
-            <div>
-              <label
-                htmlFor="name"
-                className="block mr-2 text-zinc-700 dark:text-zinc-400"
-              >
-                your name
-              </label>
-              <input
-                onChange={nameInputChangeHandler}
-                value={nameInput}
-                id="name"
-                type="text"
-                placeholder="enter a name..."
-                className="px-2 py-1 w-full bg-zinc-200 dark:bg-zinc-700 placeholder:text-zinc-500 text-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="message"
-                className="block text-zinc-700 dark:text-zinc-400"
-              >
-                message
-              </label>
-              <textarea
-                onChange={messageInputChangeHandler}
-                onFocus={typingOnHandler}
-                onBlur={typingOffHandler}
-                onKeyDown={keyDownHandler}
-                value={messageInput}
-                id="message"
-                rows={5}
-                placeholder="type a message..."
-                className="px-2 py-1 w-full resize-none overflow-y-auto bg-zinc-200 dark:bg-zinc-700 placeholder:text-zinc-500 text-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
-              />
-            </div>
-            <button
-              type="submit"
-              className="border p-2 uppercase w-full bg-emerald-500 rounded"
-            >
-              send
-            </button>
-          </form>
-          {connected && (
-            <button
-              className="border border-red-500 text-zinc-800 dark:text-zinc-100 p-2 uppercase rounded"
-              onClick={disconnectHandler}
-            >
-              disconnect
-            </button>
-          )}
-          {!connected && (
-            <button
-              className="border border-green-500 text-zinc-800 dark:text-zinc-100 p-2 uppercase rounded"
-              onClick={connectHandler}
-            >
-              connect
-            </button>
-          )}
+        <div className="flex flex-col w-96 gap-2">
+          <ChatMessages />
+          <MessageInput />
         </div>
       </div>
+      {connected && (
+        <button
+          className="border border-red-500 text-zinc-800 dark:text-zinc-100 p-2 uppercase rounded"
+          onClick={disconnectHandler}
+        >
+          disconnect
+        </button>
+      )}
+      {!connected && (
+        <button
+          className="border border-green-500 text-zinc-800 dark:text-zinc-100 p-2 uppercase rounded"
+          onClick={connectHandler}
+        >
+          connect
+        </button>
+      )}
     </div>
   );
 }

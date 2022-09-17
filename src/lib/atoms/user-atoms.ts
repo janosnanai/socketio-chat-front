@@ -18,3 +18,14 @@ export const usersGetterAtom = atom((get) => get(usersBaseAtom));
 export const usersSetterAtom = atom(null, (_get, set, newUsers: User[]) =>
   set(usersBaseAtom, newUsers)
 );
+
+const usersTypingBaseAtom = atom(false);
+
+export const usersTypingGetterAtom = atom((get) => get(usersTypingBaseAtom));
+
+export const usersTypingSetterAtom = atom(
+  null,
+  (_get, set, isTyping: boolean) => {
+    set(usersTypingBaseAtom, isTyping);
+  }
+);

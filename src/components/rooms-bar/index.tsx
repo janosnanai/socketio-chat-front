@@ -6,19 +6,21 @@ import { UsersIcon, UserCircleIcon } from "@heroicons/react/20/solid";
 
 import {
   currentRoomGetterAtom,
+  currentRoomSetterAtom,
   roomsGetterAtom,
+  socketAtom,
   usersGetterAtom,
 } from "../../lib/atoms";
 import { generateRoomsWithUsers } from "../../lib/helpers";
+import { EventTypes } from "../../lib/constants";
 
-function RoomsBar({
-  changeHandler,
-}: {
-  changeHandler: (value: Room | null) => void;
-}) {
-  const [users] = useAtom(usersGetterAtom);
-  const [rooms] = useAtom(roomsGetterAtom);
+function RoomsBar() {
   const [currentRoom] = useAtom(currentRoomGetterAtom);
+  const [, setCurrentRoom] = useAtom(currentRoomSetterAtom);
+  const [rooms] = useAtom(roomsGetterAtom);
+  const [socket] = useAtom(socketAtom);
+  const [users] = useAtom(usersGetterAtom);
+
   const [roomsWithUsers, setRoomsWithUsers] = useState<RoomsWithUsers | null>(
     null
   );
@@ -28,9 +30,16 @@ function RoomsBar({
     setRoomsWithUsers(generateRoomsWithUsers(rooms, users));
   }, [rooms, users]);
 
+  function changeRoomHandler(selectedRoom: Room | null) {
+    if (!selectedRoom) return;
+    socket.emit(EventTypes.JOIN_ROOM, { roomId: selectedRoom.id }, () => {
+      setCurrentRoom(selectedRoom);
+    });
+  }
+
   return (
-    <aside className="p-3 rounded-lg bg-zinc-900">
-      <RadioGroup value={currentRoom} onChange={changeHandler}>
+    <aside className="p-3 rounded-lg bg-zinc-900 shadow-lg">
+      <RadioGroup value={currentRoom} onChange={changeRoomHandler}>
         <div className="space-y-2">
           {roomsWithUsers &&
             rooms.map((room) => (
