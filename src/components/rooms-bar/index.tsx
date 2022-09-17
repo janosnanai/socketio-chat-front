@@ -44,10 +44,10 @@ function RoomsBar() {
           {roomsWithUsers &&
             rooms.map((room) => (
               <div className="flex gap-3" key={"r" + room.id}>
-                <RadioGroup.Option value={room} className="h-min">
+                <RadioGroup.Option value={room} className="h-5 mt-3 ">
                   {({ checked }) => (
                     <span
-                      className={`cursor-pointer inline-block mt-3 h-5 w-5 rounded-full transition-colors duration-300 ease-out hover:border-spacing-2 ${
+                      className={`cursor-pointer inline-block h-5 w-5 rounded-full transition-colors duration-300 ease-out ${
                         checked
                           ? "bg-emerald-500"
                           : "bg-neutral-600 hover:bg-neutral-500"

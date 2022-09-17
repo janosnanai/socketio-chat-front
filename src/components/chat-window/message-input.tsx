@@ -57,13 +57,13 @@ function MessageInput() {
           id="message"
           rows={2}
           placeholder="type a message..."
-          className="px-2 py-1 w-full resize-none rounded-l-lg overflow-y-auto bg-zinc-900 text-zinc-100 placeholder:text-zinc-400 shadow-lg"
+          className="px-2 py-1 w-full resize-none overflow-y-auto text-zinc-100 bg-zinc-900 placeholder:text-zinc-500 rounded-lg shadow-lg"
         />
         <button
           type="submit"
-          className="p-2 w-11 bg-emerald-500 hover:bg-emerald-400 rounded-r-lg"
+          className="p-2 h-11 w-11 my-auto mx-2 transition bg-emerald-500 hover:bg-emerald-400 rounded-full shadow-lg hover:shadow-xl"
         >
-          <PaperAirplaneIcon className="h-6 w-6" />
+          <PaperAirplaneIcon className="ml-0.5 h-6 w-6" />
         </button>
       </div>
     </form>

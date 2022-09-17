@@ -88,18 +88,11 @@ function App() {
     setCurrentRoom(null);
   }
 
-  function changeRoomHandler(selectedRoom: Room | null) {
-    if (!selectedRoom) return;
-    socket.emit(EventTypes.JOIN_ROOM, { roomId: selectedRoom.id }, () => {
-      setCurrentRoom(selectedRoom);
-    });
-  }
-
   return (
     <div className="h-screen relative bg-gradient-to-tr from-fuchsia-800 to-cyan-800 transition-colors">
       <DarkModeSwitch className="absolute right-3 top-3" />
       <div className="flex gap-5 justify-center pt-12">
-        <RoomsBar changeHandler={changeRoomHandler} />
+        <RoomsBar />
         <div className="flex flex-col w-96 gap-2">
           <ChatMessages />
           <MessageInput />
