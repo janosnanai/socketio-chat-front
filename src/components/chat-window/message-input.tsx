@@ -57,7 +57,7 @@ function MessageInput() {
           id="message"
           rows={2}
           placeholder="type a message..."
-          className="px-2 py-1 w-full resize-none overflow-y-auto text-zinc-100 bg-zinc-900 placeholder:text-zinc-500 rounded-lg shadow-lg"
+          className="px-2 py-1 w-full resize-none overflow-y-auto text-zinc-900 dark:text-zinc-100 bg-zinc-300 dark:bg-zinc-900 placeholder:text-zinc-500 rounded-lg shadow-lg"
         />
         <button
           type="submit"

@@ -17,7 +17,7 @@ function ChatMessages() {
   return (
     <div
       id="chat-window"
-      className="h-96 w-full rounded-lg overflow-y-auto bg-zinc-200 dark:bg-zinc-900 shadow-lg"
+      className="h-96 w-full rounded-lg overflow-y-auto bg-zinc-300 dark:bg-zinc-900 shadow-lg"
     >
       <ul>
         {messages.map((message) => {

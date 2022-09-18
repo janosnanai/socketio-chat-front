@@ -38,7 +38,7 @@ function RoomsBar() {
   }
 
   return (
-    <aside className="p-3 rounded-lg bg-zinc-900 shadow-lg">
+    <aside className="p-3 rounded-lg bg-zinc-300 dark:bg-zinc-900 shadow-lg">
       <RadioGroup value={currentRoom} onChange={changeRoomHandler}>
         <div className="space-y-2">
           {roomsWithUsers &&
@@ -62,8 +62,8 @@ function RoomsBar() {
                         <Disclosure.Button
                           className={`p-2 rounded-lg transition-colors group duration-300 ${
                             currentRoom?.id === room.id
-                              ? "text-emerald-300 bg-zinc-700"
-                              : "text-zinc-400 hover:text-zinc-200 bg-zinc-800"
+                              ? "text-zinc-900 dark:text-zinc-200 bg-zinc-50 dark:bg-zinc-700"
+                              : "text-zinc-700 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 bg-zinc-200 dark:bg-zinc-800"
                           }`}
                         >
                           <div className="flex justify-between items-center w-44">
@@ -80,7 +80,7 @@ function RoomsBar() {
                               </div>
                             </div>
                             <ChevronRightIcon
-                              className={`h-7 w-7 p-1 rounded-full group-hover:bg-zinc-600 transition-all duration-300 ${
+                              className={`h-7 w-7 p-1 rounded-full group-hover:bg-zinc-300 dark:group-hover:bg-zinc-600 transition-all duration-300 ${
                                 open ? "rotate-90" : "rotate-0"
                               }`}
                             />
