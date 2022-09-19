@@ -12,7 +12,7 @@ type ClientMsg = {
   type: number;
   content: string;
   id: string;
-  author: string;
+  author: UserCore;
   time: string;
 };
 type ServerMsg = {
@@ -36,14 +36,15 @@ type User = {
   typing: boolean;
   roomId?: string | null;
 };
+type UserCore = {
+  id?: string;
+  username: string;
+};
 type Room = {
   id: string;
   name: string;
 };
 
-type ThisUser = {
-  username: string;
-};
 type RoomsWithUsers = {
   [key: string]: User[];
 };

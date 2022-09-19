@@ -1,11 +1,17 @@
 import { useAtom } from "jotai";
 import { useEffect } from "react";
 
-import { messagesGetterAtom, usersTypingGetterAtom } from "../../lib/atoms";
+import MessageBubble from "./message-bubble";
+import {
+  messagesGetterAtom,
+  thisUserGetterAtom,
+  usersTypingGetterAtom,
+} from "../../lib/atoms";
 import { MessageTypes } from "../../lib/constants";
 
 function ChatMessages() {
   const [messages] = useAtom(messagesGetterAtom);
+  const [user] = useAtom(thisUserGetterAtom);
   const [showTyping] = useAtom(usersTypingGetterAtom);
   const chatWindow = document.getElementById("chat-window");
 
@@ -17,7 +23,7 @@ function ChatMessages() {
   return (
     <div
       id="chat-window"
-      className="h-96 w-full rounded-lg overflow-y-auto bg-zinc-300 dark:bg-zinc-900 shadow-lg"
+      className="h-96 w-full rounded-lg overflow-y-auto bg-zinc-200 dark:bg-zinc-900 shadow-lg"
     >
       <ul>
         {messages.map((message) => {
@@ -33,9 +39,11 @@ function ChatMessages() {
           if (message.type === MessageTypes.CLIENT) {
             return (
               <li key={message.id}>
-                <p>{`${(message as ClientMsg).content} -- ${
-                  (message as ClientMsg).author
-                }`}</p>
+                <MessageBubble
+                  message={message as ClientMsg}
+                  // @ts-ignore
+                  isOwn={user.id === message.author.id}
+                />
               </li>
             );
           }

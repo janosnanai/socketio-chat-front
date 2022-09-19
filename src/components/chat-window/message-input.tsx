@@ -19,7 +19,7 @@ function MessageInput() {
   function submitMessage() {
     if (!messageInput.trim()) return;
     socket.emit(EventTypes.CREATE_MESSAGE, {
-      author: user.username,
+      author: user,
       content: messageInput,
     });
     setMessageInput("");
@@ -57,7 +57,7 @@ function MessageInput() {
           id="message"
           rows={2}
           placeholder="type a message..."
-          className="px-2 py-1 w-full resize-none overflow-y-auto text-zinc-900 dark:text-zinc-100 bg-zinc-300 dark:bg-zinc-900 placeholder:text-zinc-500 rounded-lg shadow-lg"
+          className="px-2 py-1 w-full resize-none overflow-y-auto text-zinc-900 dark:text-zinc-100 bg-zinc-200 dark:bg-zinc-900 placeholder:text-zinc-500 rounded-lg shadow-lg"
         />
         <button
           type="submit"

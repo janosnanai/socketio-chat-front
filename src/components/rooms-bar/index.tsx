@@ -38,7 +38,7 @@ function RoomsBar() {
   }
 
   return (
-    <aside className="p-3 rounded-lg bg-zinc-300 dark:bg-zinc-900 shadow-lg">
+    <aside className="p-3 rounded-lg bg-zinc-200 dark:bg-zinc-900 shadow-lg">
       <RadioGroup value={currentRoom} onChange={changeRoomHandler}>
         <div className="space-y-2">
           {roomsWithUsers &&
@@ -62,8 +62,8 @@ function RoomsBar() {
                         <Disclosure.Button
                           className={`p-2 rounded-lg transition-colors group duration-300 ${
                             currentRoom?.id === room.id
-                              ? "text-zinc-900 dark:text-zinc-200 bg-zinc-50 dark:bg-zinc-700"
-                              : "text-zinc-700 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 bg-zinc-200 dark:bg-zinc-800"
+                              ? "text-zinc-900 dark:text-zinc-200 bg-zinc-50 dark:bg-zinc-700 shadow"
+                              : "text-zinc-700 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 bg-zinc-100 dark:bg-zinc-800"
                           }`}
                         >
                           <div className="flex justify-between items-center w-44">

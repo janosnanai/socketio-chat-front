@@ -1,12 +1,12 @@
 import { atom } from "jotai";
 
-const thisUserBaseAtom = atom<ThisUser>({ username: "anonymus" });
+const thisUserBaseAtom = atom<UserCore>({ username: "anonymus" });
 
 export const thisUserGetterAtom = atom((get) => get(thisUserBaseAtom));
 
 export const thisUserSetterAtom = atom(
   null,
-  (_get, set, newThisUser: ThisUser) => {
+  (_get, set, newThisUser: UserCore) => {
     set(thisUserBaseAtom, newThisUser);
   }
 );

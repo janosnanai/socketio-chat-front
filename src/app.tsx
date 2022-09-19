@@ -13,6 +13,7 @@ import {
   socketConnectedGetterAtom,
   socketConnectedSetterAtom,
   thisUserGetterAtom,
+  thisUserSetterAtom,
   usersSetterAtom,
   usersTypingSetterAtom,
 } from "./lib/atoms";
@@ -26,6 +27,7 @@ function App() {
   const [connected] = useAtom(socketConnectedGetterAtom);
   const [, setConnected] = useAtom(socketConnectedSetterAtom);
   const [user] = useAtom(thisUserGetterAtom);
+  const [, setUser] = useAtom(thisUserSetterAtom);
   const [, setMessages] = useAtom(messagesSetterAtom);
   const [, setShowTyping] = useAtom(usersTypingSetterAtom);
   const [, setUsers] = useAtom(usersSetterAtom);
@@ -62,27 +64,26 @@ function App() {
   }, [initSocket]);
 
   function connectHandler() {
-    if (!socket.connected) {
-      socket.connect().emit(
-        EventTypes.NEW_USER,
-        { username: user.username },
-        // receive rooms from server
-        ({ rooms: newRooms }: SyncRoomsMsg) => {
-          setRooms(newRooms);
-          if (!newRooms.length) return;
-          const starterRoom = newRooms[0];
-          socket.emit(EventTypes.JOIN_ROOM, { roomId: starterRoom.id }, () =>
-            setCurrentRoom(starterRoom)
-          );
-        }
-      );
-    }
+    if (socket.connected) return;
+    socket.connect().emit(
+      EventTypes.NEW_USER,
+      { username: user.username },
+      // receive rooms from server
+      ({ rooms: newRooms }: SyncRoomsMsg) => {
+        setRooms(newRooms);
+        setUser({ username: user.username, id: socket.id });
+        if (!newRooms.length) return;
+        const starterRoom = newRooms[0];
+        socket.emit(EventTypes.JOIN_ROOM, { roomId: starterRoom.id }, () =>
+          setCurrentRoom(starterRoom)
+        );
+      }
+    );
   }
 
   function disconnectHandler() {
-    if (socket.connected) {
-      socket.disconnect();
-    }
+    if (!socket.connected) return;
+    socket.disconnect();
     setUsers([]);
     setRooms([]);
     setCurrentRoom(null);
