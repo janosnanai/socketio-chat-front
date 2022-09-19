@@ -47,18 +47,20 @@ function MessageInput() {
   return (
     <form onSubmit={submitHandler}>
       <div className="flex">
-        <label className="sr-only">message</label>
-        <textarea
-          onChange={messageInputChangeHandler}
-          onFocus={typingOnHandler}
-          onBlur={typingOffHandler}
-          onKeyDown={keyDownHandler}
-          value={messageInput}
-          id="message"
-          rows={2}
-          placeholder="type a message..."
-          className="px-2 py-1 w-full resize-none overflow-y-auto text-zinc-900 dark:text-zinc-100 bg-zinc-200 dark:bg-zinc-900 placeholder:text-zinc-500 rounded-lg shadow-lg"
-        />
+        <div className="w-80 h-14 rounded-lg shadow-lg overflow-hidden">
+          <label className="sr-only">message</label>
+          <textarea
+            onChange={messageInputChangeHandler}
+            onFocus={typingOnHandler}
+            onBlur={typingOffHandler}
+            onKeyDown={keyDownHandler}
+            value={messageInput}
+            id="message"
+            rows={2}
+            placeholder="type a message..."
+            className="px-2 py-1 w-full resize-none overflow-y-auto text-zinc-900 dark:text-zinc-100 bg-zinc-200 dark:bg-zinc-900 placeholder:text-zinc-500 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-black/25 dark:scrollbar-thumb-white/25"
+          />
+        </div>
         <button
           type="submit"
           className="p-2 h-11 w-11 my-auto mx-2 transition bg-emerald-500 hover:bg-emerald-400 rounded-full shadow-lg hover:shadow-xl"

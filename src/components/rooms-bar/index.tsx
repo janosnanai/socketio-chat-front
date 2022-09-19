@@ -38,7 +38,7 @@ function RoomsBar() {
   }
 
   return (
-    <aside className="p-3 rounded-lg bg-zinc-200 dark:bg-zinc-900 shadow-lg">
+    <aside className="p-3 bg-zinc-200 dark:bg-zinc-900 shadow-lg rounded-lg">
       <RadioGroup value={currentRoom} onChange={changeRoomHandler}>
         <div className="space-y-2">
           {roomsWithUsers &&
