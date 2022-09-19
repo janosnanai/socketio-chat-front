@@ -24,7 +24,7 @@ function ChatMessages() {
     <div className="h-96 w-full rounded-lg shadow-lg overflow-hidden">
       <div
         id="chat-window"
-        className="h-full w-full overflow-y-auto bg-zinc-200 dark:bg-zinc-900 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-black/25 dark:scrollbar-thumb-white/25"
+        className="h-full w-full pr-1 overflow-y-auto bg-zinc-200 dark:bg-zinc-900 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-black/25 hover:scrollbar-thumb-black/30 dark:scrollbar-thumb-white/25 dark:hover:scrollbar-thumb-white/30"
       >
         <ul>
           {messages.map((message) => {

@@ -58,7 +58,7 @@ function MessageInput() {
             id="message"
             rows={2}
             placeholder="type a message..."
-            className="px-2 py-1 w-full resize-none overflow-y-auto text-zinc-900 dark:text-zinc-100 bg-zinc-200 dark:bg-zinc-900 placeholder:text-zinc-500 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-black/25 dark:scrollbar-thumb-white/25"
+            className="px-2 py-1 w-full resize-none overflow-y-auto text-zinc-900 dark:text-zinc-100 bg-zinc-200 dark:bg-zinc-900 placeholder:text-zinc-500 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-black/25 hover:scrollbar-thumb-black/30 dark:scrollbar-thumb-white/25 dark:hover:scrollbar-thumb-white/30"
           />
         </div>
         <button
