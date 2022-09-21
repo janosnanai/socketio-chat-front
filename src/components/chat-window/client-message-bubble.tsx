@@ -1,4 +1,4 @@
-function MessageBubble({
+function ClientMessageBubble({
   message,
   isOwn = false,
 }: {
@@ -14,7 +14,9 @@ function MessageBubble({
       }`}
     >
       <div className="flex gap-2 items-center">
-        <h4 className="text-sm text-zinc-900 dark:text-zinc-100">{message.author.username}</h4>
+        <h4 className="text-sm text-zinc-900 dark:text-zinc-100">
+          {message.author.username}
+        </h4>
         <p className="text-xs font-mono text-zinc-500">{message.time}</p>
       </div>
       <div>
@@ -24,4 +26,4 @@ function MessageBubble({
   );
 }
 
-export default MessageBubble;
+export default ClientMessageBubble;
