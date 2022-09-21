@@ -1,6 +1,6 @@
 import { atom } from "jotai";
 
-import socket from "../socket";
+import socket from "../api/socket";
 
 const socketConnectedBaseAtom = atom(false);
 

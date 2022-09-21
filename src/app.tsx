@@ -1,13 +1,13 @@
 import { useAtom } from "jotai";
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect } from "react";
 
-import ChatMessages from "./components/chat-window/chat-messages";
+import RoomChatWindow from "./components/chat-window/room-chat-window";
 import DarkModeSwitch from "./components/ui/dark-mode-switch";
 import MessageInput from "./components/chat-window/message-input";
-import RoomsBar from "./components/rooms-bar";
+import RoomsBar from "./components/sidebar";
 import {
   currentRoomSetterAtom,
-  messagesSetterAtom,
+  currentRoomGetterAtom,
   roomsSetterAtom,
   socketAtom,
   socketConnectedGetterAtom,
@@ -15,53 +15,44 @@ import {
   thisUserGetterAtom,
   thisUserSetterAtom,
   usersSetterAtom,
-  usersTypingSetterAtom,
 } from "./lib/atoms";
 import { EventTypes } from "./lib/constants";
 
 function App() {
-  const firstRenderRef = useRef(true);
   const [socket] = useAtom(socketAtom);
+  const [currentRoom] = useAtom(currentRoomGetterAtom);
   const [, setCurrentRoom] = useAtom(currentRoomSetterAtom);
   const [, setRooms] = useAtom(roomsSetterAtom);
   const [connected] = useAtom(socketConnectedGetterAtom);
   const [, setConnected] = useAtom(socketConnectedSetterAtom);
   const [user] = useAtom(thisUserGetterAtom);
   const [, setUser] = useAtom(thisUserSetterAtom);
-  const [, setMessages] = useAtom(messagesSetterAtom);
-  const [, setShowTyping] = useAtom(usersTypingSetterAtom);
   const [, setUsers] = useAtom(usersSetterAtom);
 
-  const initSocket = useCallback(() => {
-    socket
-      .on(EventTypes.CONNECT, () => {
-        setConnected(true);
-      })
-      .on(EventTypes.DISCONNECT, () => {
-        setConnected(false);
-      })
-      .on(EventTypes.CLIENT_MESSAGE, (msg: ClientMsg) => {
-        setMessages(msg);
-      })
-      .on(EventTypes.SERVER_MESSAGE, (msg: ServerMsg) => {
-        setMessages(msg);
-      })
-      .on(EventTypes.TYPING, ({ isTyping }: TypingMsg) => {
-        setShowTyping(isTyping);
-      })
-      .on(EventTypes.SYNC_USERS, ({ users }: SyncUsersMsg) => {
-        setUsers(users);
-      });
-  }, [socket]);
+  function connectListener() {
+    setConnected(true);
+  }
+
+  function disconnectListener() {
+    setConnected(false);
+  }
+
+  function syncUsersListener({ users }: SyncUsersMsg) {
+    setUsers(users);
+  }
 
   useEffect(() => {
-    // hack to avoid react 18 doublerendering
-    if (!firstRenderRef.current) return;
-
-    initSocket();
-
-    firstRenderRef.current = false;
-  }, [initSocket]);
+    socket
+      .on(EventTypes.CONNECT, connectListener)
+      .on(EventTypes.DISCONNECT, disconnectListener)
+      .on(EventTypes.SYNC_USERS, syncUsersListener);
+    return () => {
+      socket
+        .off(EventTypes.CONNECT, connectListener)
+        .off(EventTypes.DISCONNECT, disconnectListener)
+        .off(EventTypes.SYNC_USERS, syncUsersListener);
+    };
+  }, [socket]);
 
   function connectHandler() {
     if (socket.connected) return;
@@ -95,7 +86,7 @@ function App() {
       <div className="flex gap-5 justify-center pt-12">
         <RoomsBar />
         <div className="flex flex-col w-96 gap-2">
-          <ChatMessages />
+          <RoomChatWindow />
           <MessageInput />
         </div>
       </div>

@@ -30,6 +30,7 @@ type SyncUsersMsg = {
 type SyncRoomsMsg = {
   rooms: Room[];
 };
+
 type User = {
   id: string;
   username: string;
@@ -43,6 +44,11 @@ type UserCore = {
 type Room = {
   id: string;
   name: string;
+};
+type RoomChat = {
+  id?: string;
+  roomId: string;
+  messages: (ClientMsg | ServerMsg)[];
 };
 
 type RoomsWithUsers = {

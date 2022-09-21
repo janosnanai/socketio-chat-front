@@ -10,9 +10,12 @@
   "dependencies": {
     "@headlessui/react": "^1.7.0",
     "@heroicons/react": "^2.0.10",
+    "@tanstack/react-query": "^4.3.9",
+    "@tanstack/react-query-devtools": "^4.3.9",
     "jotai": "^1.8.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-spinners": "^0.13.4",
     "socket.io-client": "^4.5.2"
   },
   "devDependencies": {
