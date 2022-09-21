@@ -48,8 +48,6 @@ function RoomChatWindow() {
 
   useEffect(() => {
     const chatWindow = document.getElementById("chat-window");
-    console.log(chatWindow);
-
     if (!chatWindow) return;
     chatWindow.scrollTop = chatWindow.scrollHeight;
   }, [data, messages, room]);

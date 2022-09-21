@@ -79,11 +79,13 @@ function RoomsBar() {
                                 </span>
                               </div>
                             </div>
-                            <ChevronRightIcon
-                              className={`h-7 w-7 p-1 rounded-full group-hover:bg-zinc-300 dark:group-hover:bg-zinc-600 transition-all duration-300 ${
-                                open ? "rotate-90" : "rotate-0"
-                              }`}
-                            />
+                            <div className="p-1 rounded-full group-hover:bg-zinc-300 dark:group-hover:bg-zinc-600 transition-colors duration-300">
+                              <ChevronRightIcon
+                                className={`h-6 w-6 text-zinc-700 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-200 transition duration-300 ${
+                                  open ? "rotate-90" : "rotate-0"
+                                }`}
+                              />
+                            </div>
                           </div>
                         </Disclosure.Button>
                         <Disclosure.Panel as="ul">
