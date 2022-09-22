@@ -23,10 +23,11 @@ function StartScreen() {
 
   function connectHandler() {
     if (socket.connected) return;
-    setUser({ username: usernameInput, id: nanoid() });
+    const userId = nanoid();
+    setUser({ username: usernameInput, id: userId });
     socket.connect().emit(
       EventTypes.NEW_USER,
-      { username: usernameInput },
+      { id: userId, username: usernameInput },
       // receive rooms from server
       ({ rooms: newRooms }: SyncRoomsMsg) => {
         setRooms(newRooms);
