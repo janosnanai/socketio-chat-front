@@ -14,7 +14,7 @@ function ClientMessageBubble({
       }`}
     >
       <div className="flex gap-2 items-center">
-        <h4 className="text-sm text-zinc-900 dark:text-zinc-100">
+        <h4 className="text-sm text-cyan-700 dark:text-cyan-500">
           {message.author.username}
         </h4>
         <p className="text-xs font-mono text-zinc-500">{message.time}</p>
