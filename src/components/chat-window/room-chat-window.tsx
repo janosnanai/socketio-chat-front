@@ -3,6 +3,7 @@ import { EventTypes } from "../../lib/constants";
 import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { SyncLoader } from "react-spinners";
 
 import ClientMessageBubble from "./client-message-bubble";
 import { fetchRoomChat } from "../../lib/api/fetch-chat";
@@ -111,9 +112,15 @@ function RoomChatWindow() {
                   })}
                 </ul>
               )}
-              <p className="h-6 w-full">
-                {showTyping && "somebody is typing a message..."}
-              </p>
+              <div className="h-6 mb-3 mr-5">
+                <SyncLoader
+                  loading={showTyping}
+                  className="text-right"
+                  color="#9936d6"
+                  size={5}
+                  speedMultiplier={0.8}
+                />
+              </div>
             </div>
           </div>
         </>
