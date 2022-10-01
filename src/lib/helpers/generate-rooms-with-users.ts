@@ -2,7 +2,7 @@ export function generateRoomsWithUsers(
   rooms: Room[],
   users: User[]
 ): RoomsWithUsers {
-  const roomsWithUsers = rooms.reduce(
+  const roomsWithUsers: RoomsWithUsers = rooms.reduce(
     (prev: any, curr) => ({ ...prev, [curr.id]: [] }),
     {}
   );
