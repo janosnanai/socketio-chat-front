@@ -23,7 +23,7 @@ function MessageInput({ disabled = false }: { disabled?: boolean }) {
 
   function submitMessage() {
     if (!messageInput.trim()) return;
-    socket.emit(EventTypes.CREATE_MESSAGE, {
+    socket.emit(EventTypes.CREATE_ROOM_MESSAGE, {
       author: user,
       content: messageInput,
     });
@@ -31,11 +31,11 @@ function MessageInput({ disabled = false }: { disabled?: boolean }) {
   }
 
   function typingOnHandler() {
-    socket.emit(EventTypes.TYPING, { isTyping: true });
+    socket.emit(EventTypes.TYPING_ROOM, { isTyping: true });
   }
 
   function typingOffHandler() {
-    socket.emit(EventTypes.TYPING, { isTyping: false });
+    socket.emit(EventTypes.TYPING_ROOM, { isTyping: false });
   }
 
   function submitHandler(event?: FormEvent) {

@@ -32,7 +32,7 @@ function RoomChatWindow() {
     setMessages((prev) => [...prev, msg]);
   }
 
-  function typingHandler({ isTyping }: TypingMsg) {
+  function typingHandler({ isTyping }: TypingRoomMsg) {
     setShowTyping(isTyping);
   }
 
@@ -44,14 +44,14 @@ function RoomChatWindow() {
 
   useEffect(() => {
     socket
-      .on(EventTypes.CLIENT_MESSAGE, messageHandler)
+      .on(EventTypes.CLIENT_ROOM_MESSAGE, messageHandler)
       .on(EventTypes.SERVER_MESSAGE, messageHandler)
-      .on(EventTypes.TYPING, typingHandler);
+      .on(EventTypes.TYPING_ROOM, typingHandler);
     return () => {
       socket
-        .off(EventTypes.CLIENT_MESSAGE, messageHandler)
+        .off(EventTypes.CLIENT_ROOM_MESSAGE, messageHandler)
         .off(EventTypes.SERVER_MESSAGE, messageHandler)
-        .off(EventTypes.TYPING, typingHandler);
+        .off(EventTypes.TYPING_ROOM, typingHandler);
     };
   }, [socket]);
 
