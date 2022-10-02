@@ -8,78 +8,80 @@ import { BeatLoader } from "react-spinners";
 import MessageInput from "./message-input";
 import ClientMessageBubble from "./client-message-bubble";
 import ServerMessageBubble from "./server-message-bubble";
-import { fetchRoomChat } from "../../lib/api/fetch-chat";
+import { fetchPrivateChat } from "../../lib/api/fetch-chat";
 import {
+  targetUserGetterAtom,
   thisUserGetterAtom,
   socketAtom,
-  currentRoomGetterAtom,
-  currentRoomSetterAtom,
 } from "../../lib/atoms";
 import { MessageTypes } from "../../lib/constants";
 
-function RoomChatWindow() {
-  const [room] = useAtom(currentRoomGetterAtom);
-  const [, setRoom] = useAtom(currentRoomSetterAtom);
+function PrivateChatWindow() {
   const [socket] = useAtom(socketAtom);
-  const [messages, setMessages] = useState<(ClientMsg | ServerMsg)[]>([]);
-  const { isLoading, isFetching, data, error } = useQuery(
-    ["room-chats", room?.id],
-    () => fetchRoomChat(room?.id)
-  );
+  const [targetUser] = useAtom(targetUserGetterAtom);
   const [user] = useAtom(thisUserGetterAtom);
+  const [messages, setMessages] = useState<(ClientMsg | ServerMsg)[]>([]);
   const [showTyping, setShowTyping] = useState(false);
+  const { isLoading, isFetching, data, error } = useQuery(
+    ["private-chats", targetUser?.id],
+    () => fetchPrivateChat(user && targetUser && [user.id!, targetUser.id])
+  );
 
   function messageHandler(msg: ClientMsg) {
+    if (msg.author.id !== targetUser?.id) return;
     setMessages((prev) => [...prev, msg]);
   }
 
   function sendMessageFn(message: string) {
-    socket.emit(EventTypes.CREATE_ROOM_MESSAGE, {
-      author: user,
-      content: message,
-    });
+    socket.emit(
+      EventTypes.CREATE_PRIVATE_MESSAGE,
+      {
+        author: user,
+        content: message,
+      },
+      targetUser?.id
+    );
   }
 
-  function typingHandler({ isTyping }: TypingRoomMsg) {
+  function typingHandler({ isTyping, targetUserId }: TypingPrivateMsg) {
+    if (targetUser?.id !== targetUserId) return;
     setShowTyping(isTyping);
   }
 
   function typingOnHandler() {
-    socket.emit(EventTypes.TYPING_ROOM, { isTyping: true });
+    socket.emit(EventTypes.TYPING_PRIVATE, {
+      isTyping: true,
+      targetUserId: targetUser?.id,
+    });
   }
 
   function typingOffHandler() {
-    socket.emit(EventTypes.TYPING_ROOM, { isTyping: false });
-  }
-
-  function leaveRoomhandler() {
-    socket.emit(EventTypes.LEAVE_ROOM, () => {
-      setRoom(null);
+    socket.emit(EventTypes.TYPING_PRIVATE, {
+      isTyping: false,
+      targetUserId: targetUser?.id,
     });
   }
 
   useEffect(() => {
     socket
-      .on(EventTypes.CLIENT_ROOM_MESSAGE, messageHandler)
-      .on(EventTypes.SERVER_MESSAGE, messageHandler)
-      .on(EventTypes.TYPING_ROOM, typingHandler);
+      .on(EventTypes.CLIENT_PRIVATE_MESSAGE, messageHandler)
+      .on(EventTypes.TYPING_PRIVATE, typingHandler);
     return () => {
       socket
-        .off(EventTypes.CLIENT_ROOM_MESSAGE, messageHandler)
-        .off(EventTypes.SERVER_MESSAGE, messageHandler)
-        .off(EventTypes.TYPING_ROOM, typingHandler);
+        .off(EventTypes.CLIENT_PRIVATE_MESSAGE, messageHandler)
+        .off(EventTypes.TYPING_PRIVATE, typingHandler);
     };
-  }, [socket]);
+  }, [socket, messageHandler, typingHandler]);
 
   useEffect(() => {
     const chatWindow = document.getElementById("chat-window");
     if (!chatWindow) return;
     chatWindow.scrollTop = chatWindow.scrollHeight;
-  }, [data, messages, room]);
+  }, [data, messages, targetUser]);
 
   useEffect(() => {
     setMessages(data ? data.messages : []);
-  }, [data, room]);
+  }, [data, targetUser]);
 
   return (
     <div className="flex flex-col w-96 gap-2">
@@ -87,19 +89,11 @@ function RoomChatWindow() {
         <div className="flex justify-between h-9 pl-3 pr-1 py-1 bg-zinc-100/50 dark:bg-zinc-900/50 rounded-lg shadow-lg">
           <h1
             className={`text-xl ${
-              room ? "text-zinc-900 dark:text-zinc-300" : "text-zinc-500"
+              targetUser ? "text-zinc-900 dark:text-zinc-300" : "text-zinc-500"
             }`}
           >
-            {room ? room.name : "--no room selected--"}
+            {targetUser ? targetUser.username : "--no user selected--"}
           </h1>
-          {socket.connected && room && (
-            <button
-              onClick={leaveRoomhandler}
-              className="px-2 transition-colors text-zinc-700 dark:text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300 bg-transparent hover:bg-red-500/60 uppercase rounded-lg"
-            >
-              leave
-            </button>
-          )}
         </div>
         <div className="flex-grow bg-zinc-200 dark:bg-zinc-900 rounded-lg shadow-lg overflow-hidden">
           <div
@@ -143,7 +137,6 @@ function RoomChatWindow() {
           </div>
         </div>
       </div>
-
       <MessageInput
         sendMessageFn={sendMessageFn}
         typingOnHandler={typingOnHandler}
@@ -153,4 +146,4 @@ function RoomChatWindow() {
   );
 }
 
-export default RoomChatWindow;
+export default PrivateChatWindow;

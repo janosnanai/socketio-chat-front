@@ -15,6 +15,17 @@ export enum EventTypes {
   SERVER_MESSAGE = "server-message",
 }
 
+export enum UsersTypingPrivateActionTypes {
+  ADD_USER,
+  REMOVE_USER,
+  RESET,
+}
+
+export enum SidebarTabs {
+  ROOMS,
+  USERS,
+}
+
 export enum MessageTypes {
   SERVER,
   CLIENT,

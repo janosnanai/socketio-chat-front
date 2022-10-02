@@ -1,12 +1,16 @@
+import { useAtom } from "jotai";
 import { Tab } from "@headlessui/react";
 
 import RoomsBar from "./rooms-bar";
 import UsersBar from "./users-bar";
+import { chatSelectorSetterAtom } from "../../lib/atoms";
 
-function SideBar() {
+function Sidebar() {
+  const [, setChatWindow] = useAtom(chatSelectorSetterAtom);
+
   return (
     <aside className="w-64 flex flex-col gap-2">
-      <Tab.Group>
+      <Tab.Group onChange={(idx) => setChatWindow(idx)}>
         <Tab.List className="flex gap-2 h-9 bg-zinc-100/50 dark:bg-zinc-900/50 p-1 rounded-lg shadow-lg">
           <Tab
             className={({ selected }) =>
@@ -44,4 +48,4 @@ function SideBar() {
   );
 }
 
-export default SideBar;
+export default Sidebar;

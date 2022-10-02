@@ -14,7 +14,7 @@ function UserItem({
 }) {
   return (
     <div
-      className={`m-1 px-2 py-1 relative transition-colors duration-300 rounded-lg ${
+      className={`m-1 px-2 py-1 relative cursor-pointer transition-colors duration-300 rounded-lg ${
         selected
           ? "text-zinc-900 dark:text-zinc-200 bg-zinc-50 dark:bg-zinc-700 shadow"
           : "text-zinc-700 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 bg-zinc-100 dark:bg-zinc-800"
@@ -31,10 +31,9 @@ function UserItem({
       <BeatLoader
         loading={typing}
         className="absolute bottom-0 right-1.5"
-        color="#9936d6"
+        color="rgb(168 85 247)"
         size={3}
         speedMultiplier={0.8}
-        // cssOverride={{ position: "absolute", bottom: "2px", right: "6px" }}
       />
     </div>
   );

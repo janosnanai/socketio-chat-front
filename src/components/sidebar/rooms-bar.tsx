@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { RadioGroup } from "@headlessui/react";
 
 import RoomItem from "./room-item";
-
 import {
   currentRoomGetterAtom,
   currentRoomSetterAtom,
