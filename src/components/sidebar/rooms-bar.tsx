@@ -36,12 +36,13 @@ function RoomsBar() {
       setCurrentRoom(selectedRoom);
     });
   }
+
   return (
     <RadioGroup value={currentRoom} onChange={changeRoomHandler}>
       <div className="space-y-2">
         {roomsWithUsers &&
           rooms.map((room) => {
-            const active = currentRoom?.id === room.id;
+            const selected = currentRoom?.id === room.id;
             const roomUsers = roomsWithUsers[room.id] || [];
             return (
               <div className="flex gap-3" key={"r" + room.id}>
@@ -55,7 +56,7 @@ function RoomsBar() {
                     }`
                   }
                 />
-                <RoomItem room={room} users={roomUsers} active={active} />
+                <RoomItem room={room} users={roomUsers} selected={selected} />
               </div>
             );
           })}

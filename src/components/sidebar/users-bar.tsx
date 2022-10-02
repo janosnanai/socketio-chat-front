@@ -1,5 +1,6 @@
 import { useAtom } from "jotai";
 
+import UserItem from "./user-item";
 import { thisUserGetterAtom, usersGetterAtom } from "../../lib/atoms";
 
 function UsersBar() {
@@ -12,7 +13,11 @@ function UsersBar() {
           return user.id !== thisUser.id;
         })
         .map((user) => {
-          return <li key={user.id}>{user.username}</li>;
+          return (
+            <li key={user.id}>
+              <UserItem user={user} online typing/>
+            </li>
+          );
         })}
     </ul>
   );

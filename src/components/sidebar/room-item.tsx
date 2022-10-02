@@ -5,11 +5,11 @@ import { UserCircleIcon, UsersIcon } from "@heroicons/react/20/solid";
 function RoomItem({
   room,
   users,
-  active = false,
+  selected = false,
 }: {
   room: Room;
   users: User[];
-  active?: boolean;
+  selected?: boolean;
 }) {
   return (
     <div>
@@ -18,7 +18,7 @@ function RoomItem({
           <>
             <Disclosure.Button
               className={`p-2 rounded-lg transition-colors group duration-300 ${
-                active
+                selected
                   ? "text-zinc-900 dark:text-zinc-200 bg-zinc-50 dark:bg-zinc-700 shadow"
                   : "text-zinc-700 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 bg-zinc-100 dark:bg-zinc-800"
               }`}
@@ -53,7 +53,9 @@ function RoomItem({
                   <span className="inline-block">
                     <UserCircleIcon className="h-3 w-3" />
                   </span>
-                  <span className="inline-block">{user.username}</span>
+                  <span className="inline-block w-44 truncate">
+                    {user.username}
+                  </span>
                 </li>
               ))}
             </Disclosure.Panel>
