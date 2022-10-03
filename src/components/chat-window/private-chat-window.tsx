@@ -27,7 +27,7 @@ function PrivateChatWindow() {
   );
 
   function messageHandler(msg: ClientMsg) {
-    if (msg.author.id !== targetUser?.id) return;
+    if (msg.author.id !== targetUser?.id && msg.author.id !== user.id) return;
     setMessages((prev) => [...prev, msg]);
   }
 
